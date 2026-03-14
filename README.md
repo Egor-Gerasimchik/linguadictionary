@@ -1,0 +1,2 @@
+# linguadictionary
+Lingua Dictionary Site
