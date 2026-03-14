@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Слова в статьях</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .api-status {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .search-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1da1f2;
+            box-shadow: 0 0 0 3px rgba(29,161,242,0.1);
+        }
+
+        #searchBtn {
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #1da1f2, #0d8bd9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        #searchBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(29,161,242,0.4);
+        }
+
+        #searchBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: #f7f9fa;
+            border: 1px solid #e1e8ed;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: #1da1f2;
+            color: white;
+            border-color: #1da1f2;
+        }
+
+        .results-stats {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: #1a1a1b;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .news-card.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-source {
+            font-size: 0.85em;
+            color: #657786;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .news-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            color: #1a1a1b;
+        }
+
+        .news-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .news-title a:hover {
+            color: #1da1f2;
+        }
+
+        .news-description {
+            color: #657786;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #657786;
+        }
+
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2em;
+        }
+
+        .error {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,100,100,0.1);
+            border-radius: 12px;
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 768px) {
+            .search-row {
+                flex-direction: column;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📰 Поиск статей по Вашим словам</h1>
+            <!-- <div class="api-status" id="apiStatus">Введите API ключ NewsAPI.org</div> -->
+        </div>
+
+        <div class="search-panel">
+            <div class="search-row">
+                <!-- <div class="form-group">
+                    <label>🔑 API Ключ NewsAPI.org:</label>
+                    <input type="password" id="apiKeyInput" placeholder="Ваш API ключ от newsapi.org" />
+                </div> -->
+                <div class="form-group">
+                    <label>🔍 Поисковый запрос:</label>
+                    <input type="text" id="searchInput" placeholder="Например: JavaScript, AI, Bitcoin" />
+                </div>
+                <!-- <div class="form-group">
+                    <label>🌍 Страна:</label>
+                    <select id="countrySelect">
+                        <option value="ru">Россия (ru)</option>
+                        <option value="us">США (us)</option>
+                        <option value="gb">Великобритания (gb)</option>
+                        <option value="de">Германия (de)</option>
+                        <option value="fr">Франция (fr)</option>
+                        <option value="">Все страны</option>
+                    </select>
+                </div> -->
+            </div>
+
+            <div class="search-row">
+                <div class="form-group">
+                    <label>📂 Категория:</label>
+                    <select id="categorySelect">
+                        <option value="">Все категории</option>
+                        <option value="business">Бизнес</option>
+                        <option value="entertainment">Развлечения</option>
+                        <option value="general">Общие</option>
+                        <option value="health">Здоровье</option>
+                        <option value="science">Наука</option>
+                        <option value="sports">Спорт</option>
+                        <option value="technology">Технологии</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📅 Дата (от):</label>
+                    <input type="date" id="dateFrom" />
+                </div>
+                <button id="searchBtn" onclick="performSearch()">🚀 Искать новости</button>
+            </div>
+
+            <div class="filters" id="filterTags"></div>
+        </div>
+
+        <div class="news-grid" id="newsGrid"></div>
+    </div>
+
+    <script>
+        let currentApiKey = '42a56b78f7f94b98999885ef57d6bd9f';
+        let allSources = [];
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            setupApiKeyListener();
+            generateFilterTags();
+        });
+
+        // function setupApiKeyListener() {
+        //     const apiKeyInput = document.getElementById('apiKeyInput');
+        //     apiKeyInput.addEventListener('input', function() {
+        //         currentApiKey = this.value.trim();
+        //         updateApiStatus();
+        //     });
+        // }
+
+        // function updateApiStatus() {
+        //     const status = document.getElementById('apiStatus');
+        //     if (currentApiKey) {
+        //         status.textContent = '✅ API ключ готов. Нажмите "Искать новости"';
+        //         status.style.background = 'rgba(0,255,0,0.2)';
+        //     } else {
+        //         status.textContent = '🔑 Введите API ключ NewsAPI.org';
+        //         status.style.background = 'rgba(255,100,100,0.2)';
+        //     }
+        // }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            // const country = document.getElementById('countrySelect').value;
+            const category = document.getElementById('categorySelect').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+
+            if (!currentApiKey) {
+                showError('Введите API ключ NewsAPI.org!');
+                return;
+            }
+
+            // if (!query && !country && !category) {
+            if (!query && !category) {
+                showError('Введите поисковый запрос или выберите фильтры!');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.disabled = true;
+            searchBtn.textContent = '⏳ Поиск...';
+
+            try {
+                const results = await fetchNews(query, category, dateFrom);
+                displayResults(results);
+            } catch (error) {
+                showError(`Ошибка API: ${error.message}`);
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🚀 Искать новости';
+            }
+        }
+
+        // async function fetchNews(query, country, category, dateFrom) {
+        async function fetchNews(query, category, dateFrom) {
+            const baseUrl = 'https://newsapi.org/v2/everything';
+            const params = new URLSearchParams({
+                apiKey: currentApiKey,
+                q: query || '',
+                // language: 'ru,en',
+                sortBy: 'relevancy',
+                pageSize: 20
+            });
+
+            // if (country) params.append('country', country);
+            if (category) params.append('category', category);
+            if (dateFrom) params.append('from', dateFrom);
+
+            const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+            const newsUrl = `${CORS_PROXY}${encodeURIComponent(`${baseUrl}?${params}`)}`;
+
+            const response = await fetch(newsUrl);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.articles || [];
+        }
+
+        function displayResults(articles) {
+            const grid = document.getElementById('newsGrid');
+            
+            if (articles.length === 0) {
+                grid.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Новостей не найдено</h3>
+                        <p>Попробуйте изменить запрос или фильтры</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `<div class="results-stats">
+                ✅ Найдено ${articles.length} новостей
+            </div>`;
+
+            articles.slice(0, 12).forEach((article, index) => {
+                html += createNewsCard(article, index);
+            });
+
+            grid.innerHTML = html;
+
+            // Анимация появления
+            setTimeout(() => {
+                document.querySelectorAll('.news-card').forEach((card, i) => {
+                    setTimeout(() => card.classList.add('animate'), i * 100);
+                });
+            }, 200);
+        }
+
+        function createNewsCard(article, index) {
+            const image = article.urlToImage || 'https://via.placeholder.com/350x200/1e3c72/ffffff?text=News';
+            const source = article.source?.name || 'Unknown';
+            const date = new Date(article.publishedAt).toLocaleDateString('ru-RU');
+
+            //onerror="this.src='https://via.placeholder.com/350x200/1e3c72/ffffff?text=No+Image'" 
+            return `
+                <div class="news-card">
+                    <img src="${image}" alt="${article.title}" class="news-image" />
+                    <div class="news-content">
+                        <div class="news-source">${source}</div>
+                        <div class="news-title">
+                            <a href="${article.url}" target="_blank" rel="noopener">${article.title}</a>
+                        </div>
+                        <div class="news-description">${article.description || 'Описание недоступно'}</div>
+                        <div class="news-meta">
+                            <span>📅 ${date}</span>
+                            <span>👁️ ${Math.floor(Math.random() * 10000)} просмотров</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const grid = document.getElementById('newsGrid');
+            grid.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        function generateFilterTags() {
+            const commonTags = ['javascript', 'python', 'react', 'ai', 'bitcoin', 'api', 'web'];
+            const container = document.getElementById('filterTags');
+            
+            commonTags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'filter-tag';
+                span.textContent = `#${tag}`;
+                span.onclick = () => {
+                    document.getElementById('searchInput').value = tag;
+                    performSearch();
+                };
+                container.appendChild(span);
+            });
+        }
+
+        // Поиск по Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Профессиональный Лингвословарь</title>
+</head>
+<body>
+    <!-- Матрица кода -->
+    <div class="code-matrix" id="codeMatrix"></div>
+    <!-- Голографическая сетка -->
+    <div class="holo-grid"></div>
+
+    <!-- Космический навигатор -->
+    <nav class="navigator">
+        <a href="page1.html" class="nav-btn active">Page 1</a>
+        <a href="word-wave.html" class="nav-btn">Page 2<br><small>Цепь слов</small></a>
+        <a href="techsearch.html" class="nav-btn">Page 3<br><small>Слова в статьях</small></a>
+        <a href="page4.html" class="nav-btn">Page 4</a>
+        <a href="page5.html" class="nav-btn">Page 5</a>
+    </nav>
+
+    <div class="page-content">
+        <h1 class="page-title">🚀 О сайте</h1>
+        <div class="page-description">
+            Тут инфу.<br>
+            <strong>Page 2</strong> ведёт на цепочку из различных слов.<br>
+            Нужно создать остальные файлы (page3.html, page4.html, page5.html) для полной навигации, либо убрать их.
+        </div>
+    </div>
+    
+    <div class="search-container">
+        <h1>⌨️ Поиск по словарю</h1>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Введите слово..." autocomplete="off">
+            <button class="search-btn" onclick="searchWord()">🔍</button>
+        </div>
+        <div id="result"></div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

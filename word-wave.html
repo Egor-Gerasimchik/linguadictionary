@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Созвездия Слов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 95%);
+            position: relative;
+        }
+
+        /* Мерцающие звезды */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #eee, transparent),
+                radial-gradient(1px 1px at 40px 70px, #fff, transparent),
+                radial-gradient(2px 2px at 90px 40px, #eee, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent);
+            background-repeat: repeat;
+            background-size: 250px 150px;
+            animation: twinkle 30s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.2; }
+        }
+
+        /* Навигация */
+        .nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .nav a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            background: rgba(20,25,50,0.9);
+            padding: 12px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(100,150,255,0.4);
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .nav a:hover {
+            background: rgba(100,150,255,0.9);
+            box-shadow: 0 8px 25px rgba(100,150,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Управление созвездиями */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            background: rgba(100,150,255,0.3);
+            border: 2px solid rgba(100,150,255,0.5);
+            border-radius: 30px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover, .control-btn.active {
+            background: rgba(100,150,255,0.7);
+            box-shadow: 0 10px 30px rgba(100,150,255,0.5);
+            transform: scale(1.05);
+        }
+
+        /* Созвездия слов */
+        .constellation-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .constellation-path {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+        }
+
+        /* 6 разных направлений движения */
+        .path-1 { animation: pathFlow1 18s linear infinite; }
+        .path-2 { animation: pathFlow2 20s linear infinite; }
+        .path-3 { animation: pathFlow3 16s linear infinite; }
+        .path-4 { animation: pathFlow4 22s linear infinite; }
+        .path-5 { animation: pathFlow5 19s linear infinite; }
+        .path-6 { animation: pathFlow6 17s linear infinite; }
+
+        @keyframes pathFlow1 {
+    0% { transform: translateY(120vh) rotate(-10deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) rotate(-10deg); opacity: 0; }
+}
+
+@keyframes pathFlow2 {
+    0% { transform: translateY(120vh) rotate(8deg) translateX(-15vw); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) rotate(8deg) translateX(-15vw); opacity: 0; }
+}
+
+@keyframes pathFlow3 {
+    0% { transform: translateY(120vh) rotate(12deg) translateX(10vw); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) rotate(12deg) translateX(10vw); opacity: 0; }
+}
+
+/* ✅ ИСПРАВЛЕНО: ПРАВАЯ СТОРОНА - начинается с 90vw (видимо!) */
+@keyframes pathFlow4 {
+    0% { 
+        transform: translateX(90vw) translateY(120vh) rotate(-5deg); 
+        opacity: 0; 
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { 
+        transform: translateX(-20vw) translateY(-20vh) rotate(-5deg); 
+        opacity: 0; 
+    }
+}
+
+@keyframes pathFlow5 {
+    0% { 
+        transform: translateX(-90vw) translateY(120vh) rotate(6deg); 
+        opacity: 0; 
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { 
+        transform: translateX(20vw) translateY(-20vh) rotate(6deg); 
+        opacity: 0; 
+    }
+}
+
+@keyframes pathFlow6 {
+    0% { transform: translateY(120vh) scale(0.8) rotate(20deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) scale(1.2) rotate(20deg); opacity: 0; }
+}
+
+
+        .star-word {
+            color: rgba(255,255,255,0.95);
+            font-size: 1.6em;
+            font-weight: bold;
+            margin: 18px 0;
+            padding: 15px 28px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(15px);
+            border-radius: 35px;
+            border: 1px solid rgba(100,150,255,0.4);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-shadow: 0 0 15px rgba(255,255,255,0.6);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .star-word::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .star-word:hover {
+            background: rgba(100,150,255,0.4);
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 15px 40px rgba(100,150,255,0.5);
+            border-color: rgba(100,150,255,0.9);
+        }
+
+        .star-word:hover::before {
+            left: 100%;
+        }
+
+        /* Модальное окно */
+        .word-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+        }
+
+        .word-card {
+            background: rgba(20,30,60,0.98);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid rgba(100,150,255,0.6);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+            animation: starSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes starSlide {
+            from { opacity: 0; transform: scale(0.7) rotateY(90deg); }
+            to { opacity: 1; transform: scale(1) rotateY(0deg); }
+        }
+
+        .word-emoji {
+            font-size: 4em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(100,150,255,0.8));
+        }
+
+        .word-title {
+            color: #ffffff;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 25px rgba(100,150,255,1);
+        }
+
+        .word-level {
+            color: rgba(100,150,255,1);
+            font-size: 1.3em;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 25px;
+            display: inline-block;
+            margin-bottom: 25px;
+            border: 1px solid rgba(100,150,255,0.5);
+        }
+
+        .word-translation {
+            color: #ffffff;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        .word-definition {
+            color: rgba(255,255,255,0.95);
+            line-height: 1.7;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 20px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 1.8em;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,0,0,0.3);
+            border-color: rgba(255,255,255,0.7);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .star-word { font-size: 1.3em; padding: 12px 20px; margin: 12px 0; }
+            .word-card { padding: 30px 20px; }
+            .word-title { font-size: 2.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="nav">
+        <a href="index.html">← Словарь</a>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn active" id="levelBtn">A1 → C2</button>
+        <button class="control-btn" id="randomBtn">🎲 Случайно</button>
+    </div>
+
+    <div class="constellation-container" id="constellationContainer"></div>
+
+    <!-- Модальное окно звезды -->
+    <div class="word-modal" id="wordModal">
+        <div class="word-card">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div class="word-emoji" id="modalEmoji"></div>
+            <div class="word-title" id="modalWord"></div>
+            <div class="word-level" id="modalLevel"></div>
+            <div class="word-translation" id="modalTranslation"></div>
+            <div class="word-definition" id="modalDefinition"></div>
+        </div>
+    </div>
+
+<script>
+    const constellations = [
+        { word: "fabric", translation: "структура; коммутирующая матрица", level: "B2", emoji: "🔗", definition: "Структура или коммутирующая матрица в чипах, сетях (например, switch fabric в дата-центрах)." },
+        { word: "EEPROM", translation: "электрически стираемое программируемое ПЗУ", level: "B2", emoji: "💾", definition: "Electrically Erasable Programmable Read-Only Memory — энергонезависимая память, основа флэш и микроконтроллеров." },
+        { word: "label", translation: "метка; ярлык; идентификатор", level: "A2", emoji: "🏷️", definition: "Идентификатор или подпись в коде, UI, данных; также наклейка, текстовая метка в программировании." },
+        { word: "GAAP", translation: "общепринятые принципы бухгалтерского учета", level: "C1", emoji: "📊", definition: "Generally Accepted Accounting Principles — стандарты бухучета (чаще US GAAP для финансов в IT-компаниях)." },
+        { word: "emulation", translation: "эмуляция", level: "B1", emoji: "🖥️", definition: "Имитация работы оборудования/ПО на другом устройстве (in-circuit emulation для отладки)." },
+        { word: "algorithm", translation: "алгоритм", level: "A2", emoji: "⚙️", definition: "Точная последовательность шагов для решения задачи в программировании и IT." },
+        { word: "cache", translation: "кэш", level: "B1", emoji: "⚡", definition: "Быстрый временный буфер для хранения часто используемых данных (CPU cache, browser cache)." },
+        { word: "API", translation: "интерфейс программирования приложений", level: "A1", emoji: "🔌", definition: "Application Programming Interface — набор правил для взаимодействия между программами." },
+        { word: "debug", translation: "отладка", level: "B1", emoji: "🐛", definition: "Процесс поиска и исправления ошибок (bugs) в коде или системе." },
+        { word: "framework", translation: "фреймворк", level: "B2", emoji: "🏗️", definition: "Готовая структура кода для ускорения разработки (React, Django, Spring)." },
+        { word: "container", translation: "контейнер", level: "B2", emoji: "📦", definition: "Легковесная виртуализация для запуска приложений (Docker container)." },
+        { word: "neural", translation: "нейронный", level: "C1", emoji: "🧠", definition: "Относящийся к нейронным сетям в машинном обучении и AI." }
+    ];
+
+    // ✅ ФУНКЦИИ ПЕРЕМЕЩЕНЫ ВВЕРХ (до кнопок!)
+    function generateConstellations(mode) {
+        const container = document.getElementById('constellationContainer');
+        container.innerHTML = '';
+
+        let words = [...constellations];
+        
+        if (mode === 'level') {
+            const levelOrder = {A1: 1, A2: 2, B1: 3, B2: 4, C1: 5, C2: 6};
+            words.sort((a, b) => levelOrder[a.level] - levelOrder[b.level]);
+        } else {
+            words.sort(() => Math.random() - 0.5);
+        }
+
+        const paths = 6;
+        const wordsPerPath = Math.ceil(words.length / paths);
+        
+        for (let path = 0; path < paths; path++) {
+            const pathDiv = document.createElement('div');
+            pathDiv.className = `constellation-path path-${path + 1}`;
+            pathDiv.style.animationDelay = `${path * 1.5}s`;
+            
+            const startIndex = path * wordsPerPath;
+            const endIndex = Math.min(startIndex + wordsPerPath, words.length);
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                const wordData = words[i];
+                const starWord = document.createElement('div');
+                starWord.className = 'star-word';
+                starWord.innerHTML = `${wordData.emoji} ${wordData.word.toUpperCase()}<br><small>${wordData.level}</small>`;
+                starWord.onclick = () => showConstellation(wordData);
+                pathDiv.appendChild(starWord);
+            }
+            container.appendChild(pathDiv);
+        }
+
+        // ✅ ИСПРАВЛЕНО: правильная работа с кнопками
+        document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(mode === 'level' ? 'levelBtn' : 'randomBtn').classList.add('active');
+    }
+
+    function showConstellation(wordData) {
+        document.getElementById('modalEmoji').textContent = wordData.emoji;
+        document.getElementById('modalWord').textContent = wordData.word;
+        document.getElementById('modalLevel').textContent = `Уровень: ${wordData.level}`;
+        document.getElementById('modalTranslation').textContent = wordData.translation;
+        document.getElementById('modalDefinition').textContent = wordData.definition;
+        document.getElementById('wordModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('wordModal').style.display = 'none';
+    }
+
+    // ✅ ИСПРАВЛЕННЫЕ кнопки с addEventListener
+    window.onload = () => {
+        generateConstellations('level');
+        
+        // Добавляем обработчики событий ПРОГРАММНО
+        document.getElementById('levelBtn').addEventListener('click', () => generateConstellations('level'));
+        document.getElementById('randomBtn').addEventListener('click', () => generateConstellations('random'));
+    };
+
+    // Закрытие модального окна
+    document.getElementById('wordModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Плавающие частицы
+    function createCosmicDust() {
+        const dust = document.createElement('div');
+        dust.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 3 + 1}px;
+            height: ${Math.random() * 3 + 1}px;
+            background: rgba(255,255,255,${Math.random() * 0.5 + 0.2});
+            border-radius: 50%;
+            left: ${Math.random() * 100}vw;
+            top: 100vh;
+            animation: cosmicDust 8s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        `;
+        document.body.appendChild(dust);
+        setTimeout(() => dust.remove(), 8000);
+    }
+
+    // Добавляем keyframes для пыли
+    const style = document.createElement('style');
+    style.textContent = `@keyframes cosmicDust {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }`;
+    document.head.appendChild(style);
+
+    setInterval(createCosmicDust, 200);
+</script>
+
+</body>
+</html>
