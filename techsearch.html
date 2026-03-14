@@ -12,16 +12,184 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            color: #333;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+            /* IT тематика: темный градиент кодера + матрица */
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 40%, #0d1117 100%);
+            position: relative;
         }
+
+        .nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .nav a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            background: rgba(20,25,50,0.9);
+            padding: 12px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(100,150,255,0.4);
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .nav a:hover {
+            background: rgba(100,150,255,0.9);
+            box-shadow: 0 8px 25px rgba(100,150,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Плавающий код вместо звезд */
+        .code-matrix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .code-line {
+            position: absolute;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: nowrap;
+            animation: matrixFall linear infinite;
+        }
+
+        @keyframes matrixFall {
+            0% {
+                transform: translateY(-100vh) rotateX(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotateX(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Технологические частицы (1 и 0) */
+        .tech-particle {
+            position: fixed;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: #00d4ff;
+            pointer-events: none;
+            animation: techFloat 8s linear forwards;
+            text-shadow: 0 0 10px currentColor;
+            z-index: 0;
+        }
+
+        @keyframes techFloat {
+            0% {
+                transform: translate(-50%, 0) scale(0.6) rotate(0deg);
+                opacity: 0;
+            }
+            15% { opacity: 1; }
+            85% {
+                transform: translate(-50%, -100vh) scale(1.1) rotate(540deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -120vh) scale(1.2) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+
+        /* Голографическая сетка */
+        .holo-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0,212,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridScan 20s linear infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes gridScan {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        /* Слова-технологии */
+        .constellation-path {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+        }
+
+        .path-1 { animation: pathFlow1 18s linear infinite; }
+        .path-2 { animation: pathFlow2 20s linear infinite; }
+        .path-3 { animation: pathFlow3 16s linear infinite; }
+        .path-4 { animation: pathFlow4 22s linear infinite; }
+        .path-5 { animation: pathFlow5 19s linear infinite; }
+        .path-6 { animation: pathFlow6 17s linear infinite; }
+
+        @keyframes pathFlow1 {
+            0% { transform: translateY(120vh) rotate(-10deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-20vh) rotate(-10deg); opacity: 0; }
+        }
+
+        @keyframes pathFlow2 { /* остальные анимации те же */ }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .navigator {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 15px 20px;
+            }
+            
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+                flex: 1;
+                min-width: 120px;
+            }
         }
 
         .header {
@@ -48,6 +216,17 @@
             display: inline-block;
             font-size: 0.9em;
             color: white;
+        }
+
+        .search-panel, .container {
+            position: relative;
+            z-index: 10;           /* выше, чем у .tech-particle */
+        }
+
+        /* блок с результатами поиска */
+        #results, #newsGrid {
+            position: relative;
+            z-index: 10;           /* тоже выше частиц */
         }
 
         .search-panel {
@@ -248,6 +427,15 @@
     </style>
 </head>
 <body>
+    <!-- Матрица кода -->
+    <div class="code-matrix" id="codeMatrix"></div>
+    <!-- Голографическая сетка -->
+    <div class="holo-grid"></div>
+
+    <div class="nav">
+        <a href="index.html">← На главную</a>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>📰 Поиск статей по Вашим словам</h1>
@@ -474,6 +662,43 @@
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') performSearch();
         });
+
+
+        
+        // Матрица кода
+        function createMatrixCode() {
+            const matrix = document.getElementById('codeMatrix');
+            
+            for (let i = 0; i < 50; i++) {
+                const codeLine = document.createElement('div');
+                codeLine.className = 'code-line';
+                codeLine.style.left = Math.random() * 100 + '%';
+                codeLine.style.fontSize = (Math.random() * 5 + 8) + 'px';
+                codeLine.style.animationDuration = (Math.random() * 5 + 10) + 's';
+                codeLine.style.animationDelay = Math.random() * 5 + 's';
+                matrix.appendChild(codeLine);
+                
+                setTimeout(() => codeLine.remove(), 20000);
+            }
+        }
+
+        // Технологические частицы 01
+        function createTechParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'tech-particle';
+            particle.textContent = Math.random() > 0.5 ? '1' : '0';
+            // случайная позиция по ширине
+            particle.style.left = Math.random() * 100 + 'vw';
+            // старт всегда чуть ниже экрана
+            particle.style.bottom = '-40px';
+            particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            particle.style.animationDelay = '0s';
+            document.body.appendChild(particle);   // ТОЛЬКО body
+            setTimeout(() => particle.remove(), 11000);
+        }
+        // Запуск эффектов
+        setInterval(createMatrixCode, 3000);
+        setInterval(createTechParticle, 150);
     </script>
 </body>
 </html>
