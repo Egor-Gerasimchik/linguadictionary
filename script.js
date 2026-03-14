@@ -88,13 +88,14 @@
             document.getElementById('searchInput').focus();
         };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const navToggle = document.getElementById('navToggle');
-        const navLinks = document.getElementById('navLinks');
+        document.addEventListener('DOMContentLoaded', () => {
+            const navToggle = document.getElementById('navToggle');
+            const navLinks = document.getElementById('navLinks');
 
-    if (navToggle && navLinks) {
-        navToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
-        });
-    }
+        if (navToggle && navLinks) {
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('open');
+                navToggle.classList.toggle('open');
+            });
+        }
     });
